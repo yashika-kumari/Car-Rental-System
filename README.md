@@ -38,9 +38,13 @@ A professional **Java Swing-based GUI application** for managing car rentals wit
   - Total cost calculation
 
 - **Late Return Charges**: 
-  - Fine: **$20 per extra day**
+  - Fine: **₹20 per extra day**
   - Automatic calculation and display
   - Final amount with all charges
+
+- **GST Breakdown**:
+  - Subtotal, 18% GST, and final payable amount are shown in the receipt
+  - Display-only calculation for a more professional invoice look
 
 ### 🔐 Admin Features
 
@@ -151,8 +155,8 @@ Car Rental System/
 3. Click **"Return Car"** button
 4. System calculates:
    - Original charge based on booked days
-   - Fine if actual days exceed booked days ($20/extra day)
-   - Total amount due
+   - Fine if actual days exceed booked days (₹20/extra day)
+   - Subtotal, GST (18%), and total amount due
 5. Return summary is displayed
 
 #### 3️⃣ View All Cars
@@ -184,9 +188,10 @@ Car Rental System/
    - Customer name
    - Car details (brand + model)
    - Days rented
-   - Base cost
+   - Subtotal
    - Fine (if any)
-   - Total amount paid
+   - GST
+   - Total payable
 
 #### 7️⃣ Admin Mode - Add Car
 
@@ -278,16 +283,16 @@ Application entry point.
 **Functionality:**
 - Initializes CarRentalSystem
 - Preloads 10 cars:
-  - Toyota Camry ($60/day)
-  - Honda Accord ($70/day)
-  - Mahindra Thar ($150/day)
-  - Hyundai Creta ($65/day)
-  - Maruti Swift ($45/day)
-  - Tata Nexon ($80/day)
-  - Kia Seltos ($85/day)
-  - BMW 320d ($200/day)
-  - Audi A4 ($220/day)
-  - Mercedes C-Class ($250/day)
+    -  - Toyota Camry (₹2500/day)
+    -  - Honda Accord (₹2200/day)
+    -  - Mahindra Thar (₹3500/day)
+    -  - Hyundai Creta (₹1800/day)
+    -  - Maruti Swift (₹1200/day)
+    -  - Tata Nexon (₹1600/day)
+    -  - Kia Seltos (₹2000/day)
+    -  - BMW 320d (₹6000/day)
+    -  - Audi A4 (₹6500/day)
+    -  - Mercedes C-Class (₹7000/day)
 - Launches GUI
 
 ---
@@ -380,15 +385,17 @@ This project demonstrates:
 
 ```
 Customer: John Doe
-Car ID: C001 (Toyota Camry - $60/day)
+Car ID: C001 (Toyota Camry - ₹2500/day)
 Rental Days: 5
 
 RECEIPT:
 ├─ Customer: John Doe (CUS1)
 ├─ Car: Toyota Camry
-├─ Daily Rate: $60
+├─ Daily Rate: ₹2500
 ├─ Days: 5
-└─ Total: $300
+├─ Subtotal: ₹12500
+├─ GST (18%): ₹2250
+└─ Total Payable: ₹14750
 ```
 
 ### Late Return with Fine
@@ -397,12 +404,14 @@ RECEIPT:
 Booked Days: 5
 Actual Days: 7
 Extra Days: 2
-Fine: 2 × $20 = $40
+Fine: 2 × ₹20 = ₹40
 
-Original Cost: $300
-Fine: $40
+Original Cost: ₹12500
+Fine: ₹40
+Subtotal: ₹12540
+GST (18%): ₹2257.20
 ─────────────
-Total Due: $340
+Total Due: ₹14797.20
 ```
 
 ---

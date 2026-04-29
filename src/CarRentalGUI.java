@@ -15,6 +15,7 @@ public class CarRentalGUI {
     private JLabel statusLabel;
     private JTable carsTable;
     private static final String ADMIN_PASSWORD = "admin123";
+    private static final double GST_RATE = 0.18;
 
     public CarRentalGUI(CarRentalSystem rentalSystem) {
         this.rentalSystem = rentalSystem;
@@ -226,6 +227,18 @@ public class CarRentalGUI {
         viewAllCars();
     }
 
+    private String formatRupees(double amount) {
+        return "₹" + String.format("%.2f", amount);
+    }
+
+    private String formatBill(double subtotal) {
+        double gst = subtotal * GST_RATE;
+        double total = subtotal + gst;
+        return "Subtotal: " + formatRupees(subtotal) + "\n" +
+               "GST (18%): " + formatRupees(gst) + "\n" +
+               "Total Payable: " + formatRupees(total);
+    }
+
     private Object[][] getCarTableData(List<Car> cars) {
         Object[][] data = new Object[cars.size()][5];
         for (int i = 0; i < cars.size(); i++) {
@@ -233,7 +246,7 @@ public class CarRentalGUI {
             data[i][0] = car.getCarId();
             data[i][1] = car.getBrand();
             data[i][2] = car.getModel();
-            data[i][3] = "$" + String.format("%.2f", car.calculatePrice(1));
+            data[i][3] = formatRupees(car.calculatePrice(1));
             data[i][4] = car.isAvailable() ? "Available" : "Rented";
         }
         return data;
@@ -241,7 +254,7 @@ public class CarRentalGUI {
 
     private void updateCarTable(List<Car> cars) {
         Object[][] data = getCarTableData(cars);
-        String[] columns = {"ID", "Brand", "Model", "Price/Day", "Status"};
+        String[] columns = {"ID", "Brand", "Model", "Price/Day (₹)", "Status"};
         carsTable.setModel(new javax.swing.table.DefaultTableModel(data, columns) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -302,7 +315,7 @@ public class CarRentalGUI {
                     "Customer: " + customerName + "\n" +
                     "Car: " + selectedCar.getBrand() + " " + selectedCar.getModel() + "\n" +
                     "Rental Days: " + days + "\n" +
-                    "Total Cost: $" + String.format("%.2f", totalPrice);
+                    formatBill(totalPrice);
 
             JOptionPane.showMessageDialog(frame, message, "Rental Successful", JOptionPane.INFORMATION_MESSAGE);
             
@@ -370,14 +383,15 @@ public class CarRentalGUI {
                 fine = (actualDays - currentRental.getDays()) * 20.0;
             }
             
+            double subtotal = currentRental.getTotalPrice() + fine;
             String message = "Car returned successfully!\n\n" +
                     "Customer: " + currentRental.getCustomer().getName() + "\n" +
                     "Car: " + carToReturn.getBrand() + " " + carToReturn.getModel() + "\n" +
                     "Booked Days: " + currentRental.getDays() + "\n" +
                     "Actual Days: " + actualDays + "\n" +
-                    "Original Cost: $" + String.format("%.2f", currentRental.getTotalPrice()) + "\n" +
-                    (fine > 0 ? "Fine: $" + String.format("%.2f", fine) + "\n" : "") +
-                    "Total Amount: $" + String.format("%.2f", currentRental.getTotalPrice() + fine);
+                    "Original Cost: " + formatRupees(currentRental.getTotalPrice()) + "\n" +
+                    (fine > 0 ? "Fine: " + formatRupees(fine) + "\n" : "") +
+                    formatBill(subtotal);
 
             JOptionPane.showMessageDialog(frame, message, "Return Successful", JOptionPane.INFORMATION_MESSAGE);
 
@@ -403,17 +417,19 @@ public class CarRentalGUI {
         }
 
         // Create table for history
-        String[] columns = {"Customer", "Car", "Days", "Base Cost", "Fine", "Total"};
-        Object[][] data = new Object[history.size()][6];
+        String[] columns = {"Customer", "Car", "Days", "Subtotal", "Fine", "GST", "Total Payable"};
+        Object[][] data = new Object[history.size()][7];
         
         for (int i = 0; i < history.size(); i++) {
             Rental rental = history.get(i);
             data[i][0] = rental.getCustomer().getName();
             data[i][1] = rental.getCar().getBrand() + " " + rental.getCar().getModel();
             data[i][2] = rental.getDays();
-            data[i][3] = "$" + String.format("%.2f", rental.getTotalPrice());
-            data[i][4] = "$" + String.format("%.2f", rental.getFine());
-            data[i][5] = "$" + String.format("%.2f", rental.getTotalPrice() + rental.getFine());
+            data[i][3] = formatRupees(rental.getTotalPrice());
+            data[i][4] = formatRupees(rental.getFine());
+            double historySubtotal = rental.getTotalPrice() + rental.getFine();
+            data[i][5] = formatRupees(historySubtotal * GST_RATE);
+            data[i][6] = formatRupees(historySubtotal * (1 + GST_RATE));
         }
 
         carsTable.setModel(new javax.swing.table.DefaultTableModel(data, columns) {
